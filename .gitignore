@@ -1,0 +1,125 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+.env*.local
+credentials.json
+token.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Database
+*.db
+*.sqlite
+
+# Logs
+logs/*.log
+*.log
+
+# Temporary files
+.tmp/
+*.tmp
+*.cache
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Elastic Beanstalk (unused — deploy is Vercel + EAS only)
+.ebextensions/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+playwright-tests/node_modules/
+
+# Playwright browsers
+ms-playwright/
+
+# Large data/output files
+*.xlsx
+*.json
+*.db
+!vercel.json
+!package.json
+!mobile/**/*.json
+!ios/**/*.json
+!ios/**/*.plist
+!web/**/*.json
+!web/**/*.ts
+!web/**/*.tsx
+!web/**/*.js
+!web/**/*.mjs
+!web/**/*.css
+*.sqlite
+*.txt
+*.csv
+!PARCEL_ADDRESS_TEMPLATE.csv
+!.env.example
+# Keep dependency manifests tracked (CI installs from these)
+!requirements.txt
+!requirements-*.txt
+# Keep test fixtures tracked (pytest reads these in CI)
+!tests/fixtures/*.txt
+!tests/fixtures/*.json
+
+# Output logs
+output/
+output*.log
+last_run.log
+latest_run.log
+analysis_run.log
+analysis.log
+fulton_pipeline.log
+enrichment_log.txt
+error_log*.txt
+dekalb_log.txt
+dekalb_pdf_sample.txt
+comparison*.txt
+detail_output.txt
+pdf_debug.txt
+run_output.txt
+raw_samples.txt
+nul
+.vercel
+web/.vercel
+web/.next
+web/node_modules
+web/tsconfig.tsbuildinfo
+mobile/.expo
+mobile/.vscode
+mobile/node_modules
+mobile/qr-dev.png
+mobile/qr-dev.txt
+supabase/.temp/
+.agents/
+
+# Local API usage counters (persistent call tallies — machine-local, not shared)
+.api_usage/
+
+# Comp store of record (purchased/scraped comps pools, reused up to 180 days —
+# machine-local; lives outside .tmp so wipes don't delete paid data)
+.comp_store/
+
+# Local agent/tooling state & skill output (never committed)
+.claude/agents/
+graphify-out/
+supabase/.branches/

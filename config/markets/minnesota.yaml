@@ -1,0 +1,48 @@
+state: MN
+state_name: Minnesota
+
+# State-level settings
+property_tax_rate: 0.0119  # Statewide mean ~1.19%
+transfer_tax_per_1000: 3.30  # Deed Tax is 0.0033 (0.33%) of consideration
+redemption_period_months: 6  # Statutory redemption varies 6-12 months for forfeiture
+tax_lien_interest_rate: 10  # MN uses penalty rates, often 10-18%
+
+# State-specific cost adjustments
+costs:
+  insurance_per_sqft_annual: 0.40  # Moderate
+  termite_inspection: 0  # Less common than south, but radon is issue
+  winterization_cost: 500  # Critical in MN
+
+  # Minnesota-specific rehab costs (lower than default for rural markets)
+  rehab_per_sqft:
+    light: 12      # Cosmetic: paint, flooring, fixtures (rural MN labor rates)
+    medium: 30     # Moderate: kitchen/bath updates, mechanicals
+    heavy: 50      # Extensive: structural, full renovation (lower than default $75)
+
+# Counties configuration
+counties:
+  faribault:
+    name: "Faribault County"
+    county_seat: "Blue Earth"
+    
+    # Data sources
+    tax_commissioner: "https://www.co.faribault.mn.us/auditor-treasurer-coordinator"
+    assessor_portal: "https://beacon.schneidercorp.com/"
+    sheriff_sales: "https://www.publicsurplus.com/sms/faribaultcore,mn/browse/home"
+    
+    # County-specific rates
+    property_tax_rate: 0.0125  # ~1.25% conservative
+    transfer_tax_per_1000: 3.30  # Standard state deed tax
+    
+    # Market characteristics
+    median_home_price: 105000
+    avg_days_on_market: 45
+    investor_activity: "moderate"
+    major_metro: false
+    
+    # Rehab cost adjustments
+    rehab_cost_multiplier: 0.67  # Lower costs for rural MN (defaults $15/$40/$75 × 0.67 = $10/$27/$50)
+    
+    # Tax lien notes
+    tax_lien_market: "forfeiture"  # MN is a tax deed/forfeiture state, not lien certificates
+    lien_auction_frequency: "annual"

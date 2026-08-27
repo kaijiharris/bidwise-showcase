@@ -1,0 +1,57 @@
+state: FL
+state_name: Florida
+
+# State-level settings
+property_tax_rate: 0.0098  # Statewide average (0.98%)
+transfer_tax_per_100: 0.70  # $0.70 per $100 of consideration
+homestead_exemption: 50000  # Not applicable for investors, but good to know
+redemption_period_days: 180  # For tax deed sales
+
+# State-specific cost adjustments
+costs:
+  insurance_per_sqft_annual: 0.75  # Higher due to hurricanes
+  wind_mitigation_inspection: 150  # FL-specific
+  flood_insurance_annual: 1500  # If in flood zone (rough estimate)
+
+# Counties configuration
+counties:
+  orange:
+    name: "Orange County"
+    county_seat: "Orlando"
+    
+    # Data sources
+    auction_portal: "https://www.orangeclerk.com"
+    assessor_portal: "https://www.ocpafl.org"
+    clerk_of_court: "https://myorangeclerk.com"
+    
+    # County-specific rates
+    property_tax_rate: 0.0105  # 1.05% (includes school, county, city)
+    
+    # Market characteristics
+    median_home_price: 385000
+    avg_days_on_market: 35
+    investor_activity: "high"
+    
+    # Rehab cost adjustments (multiplier on default)
+    rehab_cost_multiplier: 1.1  # 10% higher due to Orlando market
+    
+  pinellas:
+    name: "Pinellas County"
+    county_seat: "Clearwater"
+    
+    # Data sources
+    auction_portal: "https://www.pinellascounty.org/tax/auction.htm"
+    assessor_portal: "https://www.pcpao.org"
+    clerk_of_court: "https://www.pinellasclerk.org"
+    
+    # County-specific rates
+    property_tax_rate: 0.0092  # 0.92%
+    
+    # Market characteristics
+    median_home_price: 365000
+    avg_days_on_market: 40
+    investor_activity: "high"
+    coastal_market: true
+    
+    # Rehab cost adjustments
+    rehab_cost_multiplier: 1.05  # Slightly higher, coastal market

@@ -1,0 +1,30 @@
+# Secrets and local env. MUST be mirrored here as well as in the root
+# .easignore: eas.json lives in THIS directory, and relying on which of the two
+# files EAS resolves is undocumented behaviour to bet a credential leak on.
+# .env.local points at a LAN dev host; shipping it means a release build can
+# silently target an unreachable private address instead of failing loudly.
+.env
+.env*.local
+.env.*
+
+# Dependencies are restored by EAS from package-lock.json.
+node_modules/
+
+# Local Expo/dev artifacts.
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+*.tsbuildinfo
+
+# Generated native folders; EAS runs prebuild for managed Expo.
+ios/
+android/
+
+# Local editor/system files.
+.vscode/
+.DS_Store
+
+# Local development helpers not needed for App Store builds.
+qr-dev.png
+qr-dev.txt

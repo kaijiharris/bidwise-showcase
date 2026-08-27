@@ -1,0 +1,6 @@
+[extend]
+useDefault = true
+[allowlist]
+description = "Known false positives"
+paths = ['''\.env\.example$''', '''.*\.sample$''', '''.*(lock|\.lock)(\.json)?$''']
+regexes = ['''pk_(test|live)_[A-Za-z0-9]+''']

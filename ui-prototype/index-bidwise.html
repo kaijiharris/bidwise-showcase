@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BidWise AI - Intelligent Real Estate Investment Platform</title>
+    <link rel="stylesheet" href="styles-bidwise.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+        <div class="nav-left">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>BidWise<span class="ai-badge">AI</span></h1>
+                    <p class="tagline">Intelligent Investment Analysis</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-center">
+            <nav class="main-nav">
+                <button class="nav-item active" data-view="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-view="deals">
+                    <i class="fas fa-gem"></i>
+                    <span>Deals</span>
+                </button>
+                <button class="nav-item" data-view="analytics">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </button>
+                <button class="nav-item" data-view="portfolio">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Portfolio</span>
+                </button>
+            </nav>
+        </div>
+
+        <div class="nav-right">
+            <button class="btn-action btn-secondary">
+                <i class="fas fa-file-import"></i>
+                Import Auction
+            </button>
+            <button class="btn-action btn-primary">
+                <i class="fas fa-plus-circle"></i>
+                New Analysis
+            </button>
+            <div class="user-menu">
+                <button class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Dashboard View -->
+        <div id="dashboard-view" class="view-container active">
+            <div class="content-header">
+                <div>
+                    <h2 class="page-title">Investment Dashboard</h2>
+                    <p class="page-subtitle">Real-time insights across your pipeline</p>
+                </div>
+                <div class="header-actions">
+                    <select class="county-selector">
+                        <option>Fulton County, GA - February 2026</option>
+                        <option>Wayne County, PA - February 2026</option>
+                        <option>Faribault County, MN - December 2025</option>
+                        <option>Cobb County, GA - March 2026</option>
+                        <option>DeKalb County, GA - March 2026</option>
+                    </select>
+                    <button class="btn-icon" title="Refresh data">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card primary">
+                    <div class="kpi-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <p class="kpi-label">Total Properties</p>
+                        <h3 class="kpi-value">247</h3>
+                        <p class="kpi-change positive">+12 this week</p>
+                    </div>
+                </div>
+
+                <div class="kpi-card success">
+                    <div class="kpi-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <p class="kpi-label">Top Deals</p>
+                        <h3 class="kpi-value">18</h3>
+                        <p class="kpi-change positive">ROI &gt; 30%</p>
+                    </div>
+                </div>
+
+                <div class="kpi-card warning">
+                    <div class="kpi-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <p class="kpi-label">Avg Projected Profit</p>
+                        <h3 class="kpi-value">$45.2K</h3>
+                        <p class="kpi-change positive">+8.3% from last month</p>
+                    </div>
+                </div>
+
+                <div class="kpi-card info">
+                    <div class="kpi-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <p class="kpi-label">Avg ROI</p>
+                        <h3 class="kpi-value">28.4%</h3>
+                        <p class="kpi-change positive">+2.1% trend</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="dashboard-grid">
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Deal Distribution by ROI</h3>
+                        <div class="card-actions">
+                            <button class="btn-icon-sm"><i class="fas fa-expand"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="roiChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Risk Assessment Overview</h3>
+                        <div class="card-actions">
+                            <button class="btn-icon-sm"><i class="fas fa-expand"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="riskChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card recent-deals-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Top Opportunities</h3>
+                        <a href="#" class="view-all-link">View All →</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="deal-list">
+                            <div class="deal-item">
+                                <div class="deal-icon success">
+                                    <i class="fas fa-trophy"></i>
+                                </div>
+                                <div class="deal-info">
+                                    <h4>1247 Peachtree St NE</h4>
+                                    <p>Fulton County, GA • 3BR/2BA</p>
+                                </div>
+                                <div class="deal-metrics">
+                                    <span class="metric-badge success">ROI: 42%</span>
+                                    <span class="deal-value">$89K Profit</span>
+                                </div>
+                            </div>
+
+                            <div class="deal-item">
+                                <div class="deal-icon success">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="deal-info">
+                                    <h4>456 Maple Grove Ave</h4>
+                                    <p>Wayne County, PA • 4BR/3BA</p>
+                                </div>
+                                <div class="deal-metrics">
+                                    <span class="metric-badge success">ROI: 38%</span>
+                                    <span class="deal-value">$67K Profit</span>
+                                </div>
+                            </div>
+
+                            <div class="deal-item">
+                                <div class="deal-icon warning">
+                                    <i class="fas fa-gem"></i>
+                                </div>
+                                <div class="deal-info">
+                                    <h4>2890 Riverside Dr</h4>
+                                    <p>Cobb County, GA • 3BR/2BA</p>
+                                </div>
+                                <div class="deal-metrics">
+                                    <span class="metric-badge warning">ROI: 31%</span>
+                                    <span class="deal-value">$52K Profit</span>
+                                </div>
+                            </div>
+
+                            <div class="deal-item">
+                                <div class="deal-icon info">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="deal-info">
+                                    <h4>1133 Highland Ave</h4>
+                                    <p>Fulton County, GA • 2BR/1BA</p>
+                                </div>
+                                <div class="deal-metrics">
+                                    <span class="metric-badge info">ROI: 28%</span>
+                                    <span class="deal-value">$41K Profit</span>
+                                </div>
+                            </div>
+
+                            <div class="deal-item">
+                                <div class="deal-icon info">
+                                    <i class="fas fa-home"></i>
+                                </div>
+                                <div class="deal-info">
+                                    <h4>789 Oak Tree Lane</h4>
+                                    <p>DeKalb County, GA • 3BR/2.5BA</p>
+                                </div>
+                                <div class="deal-metrics">
+                                    <span class="metric-badge">ROI: 24%</span>
+                                    <span class="deal-value">$38K Profit</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Insights Section -->
+            <div class="card ai-insights-card">
+                <div class="card-header">
+                    <div class="ai-header">
+                        <i class="fas fa-brain ai-icon"></i>
+                        <h3 class="card-title">AI-Powered Insights</h3>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="insights-grid">
+                        <div class="insight-item">
+                            <i class="fas fa-lightbulb insight-icon"></i>
+                            <div>
+                                <h4>Market Opportunity</h4>
+                                <p>Fulton County shows 23% more deals above 30% ROI compared to historical average. Consider increasing analysis frequency.</p>
+                            </div>
+                        </div>
+                        <div class="insight-item">
+                            <i class="fas fa-exclamation-triangle insight-icon warning"></i>
+                            <div>
+                                <h4>Risk Alert</h4>
+                                <p>3 high-potential properties have elevated flood risk scores. Review flood zone data before bidding.</p>
+                            </div>
+                        </div>
+                        <div class="insight-item">
+                            <i class="fas fa-chart-line insight-icon"></i>
+                            <div>
+                                <h4>Trend Analysis</h4>
+                                <p>Average rehab costs in Wayne County have increased 12% quarter-over-quarter. Adjust cost assumptions.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deals View -->
+        <div id="deals-view" class="view-container">
+            <div class="content-header">
+                <div>
+                    <h2 class="page-title">Deal Pipeline</h2>
+                    <p class="page-subtitle">Comprehensive property analysis and filtering</p>
+                </div>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search by address, parcel ID..." id="dealSearch">
+                    </div>
+                    <button class="btn-action btn-primary">
+                        <i class="fas fa-filter"></i>
+                        Advanced Filters
+                    </button>
+                    <button class="btn-action btn-secondary">
+                        <i class="fas fa-download"></i>
+                        Export
+                    </button>
+                </div>
+            </div>
+
+            <div class="deals-layout">
+                <!-- Filters Sidebar -->
+                <aside class="filters-panel">
+                    <div class="card">
+                        <h3 class="filter-title">Financial Criteria</h3>
+
+                        <div class="filter-group">
+                            <label>Min ROI (%)</label>
+                            <div class="slider-container">
+                                <input type="range" id="minROI" min="0" max="100" value="20" class="slider">
+                                <span class="slider-value" id="minROIValue">20%</span>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Max Starting Bid</label>
+                            <input type="text" class="input" placeholder="e.g., $150,000">
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Max Rehab Cost</label>
+                            <input type="text" class="input" value="$100,000">
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Min Profit</label>
+                            <input type="text" class="input" placeholder="e.g., $30,000">
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="filter-title">Property Attributes</h3>
+
+                        <div class="filter-group">
+                            <label>Property Type</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" checked> Single Family
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" checked> Condo/Townhouse
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox"> Multi-Family
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox"> Vacant Land
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Bedrooms</label>
+                            <select class="input">
+                                <option>Any</option>
+                                <option>1+</option>
+                                <option>2+</option>
+                                <option>3+</option>
+                                <option>4+</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Max Risk Score</label>
+                            <div class="slider-container">
+                                <input type="range" id="maxRisk" min="0" max="100" value="50" class="slider">
+                                <span class="slider-value" id="maxRiskValue">50</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button class="btn-action btn-primary btn-block">Apply Filters</button>
+                        <button class="btn-action btn-secondary btn-block">Reset All</button>
+                    </div>
+                </aside>
+
+                <!-- Deals Table -->
+                <div class="deals-content">
+                    <div class="card">
+                        <div class="table-controls">
+                            <div class="table-info">
+                                <span><strong>247</strong> properties</span>
+                                <span class="separator">•</span>
+                                <span><strong>18</strong> match criteria</span>
+                            </div>
+                            <div class="view-toggle">
+                                <button class="toggle-btn active"><i class="fas fa-th-list"></i></button>
+                                <button class="toggle-btn"><i class="fas fa-th"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox"></th>
+                                        <th>Address <i class="fas fa-sort"></i></th>
+                                        <th>County <i class="fas fa-sort"></i></th>
+                                        <th>Type</th>
+                                        <th>Bed/Bath</th>
+                                        <th>Starting Bid <i class="fas fa-sort"></i></th>
+                                        <th>ARV <i class="fas fa-sort"></i></th>
+                                        <th>ROI <i class="fas fa-sort"></i></th>
+                                        <th>Profit <i class="fas fa-sort"></i></th>
+                                        <th>Risk <i class="fas fa-sort"></i></th>
+                                        <th>Score <i class="fas fa-sort"></i></th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dealsTableBody">
+                                    <!-- Sample rows - will be populated by JS -->
+                                    <tr class="top-deal">
+                                        <td><input type="checkbox"></td>
+                                        <td class="address-cell">
+                                            <strong>1247 Peachtree St NE</strong>
+                                            <span class="parcel-id">Parcel: 14-0089-0032-125</span>
+                                        </td>
+                                        <td>Fulton, GA</td>
+                                        <td><span class="badge">SFR</span></td>
+                                        <td>3 / 2</td>
+                                        <td>$142,500</td>
+                                        <td>$285,000</td>
+                                        <td><span class="metric-pill success">42.1%</span></td>
+                                        <td class="positive">$89,320</td>
+                                        <td><span class="risk-badge low">28</span></td>
+                                        <td><span class="score-badge">94</span></td>
+                                        <td>
+                                            <button class="btn-icon-sm" title="View details"><i class="fas fa-eye"></i></button>
+                                            <button class="btn-icon-sm" title="Add to portfolio"><i class="fas fa-plus"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr class="top-deal">
+                                        <td><input type="checkbox"></td>
+                                        <td class="address-cell">
+                                            <strong>456 Maple Grove Ave</strong>
+                                            <span class="parcel-id">Parcel: 28-0156-0087-042</span>
+                                        </td>
+                                        <td>Wayne, PA</td>
+                                        <td><span class="badge">SFR</span></td>
+                                        <td>4 / 3</td>
+                                        <td>$178,000</td>
+                                        <td>$320,000</td>
+                                        <td><span class="metric-pill success">38.2%</span></td>
+                                        <td class="positive">$67,450</td>
+                                        <td><span class="risk-badge low">22</span></td>
+                                        <td><span class="score-badge">91</span></td>
+                                        <td>
+                                            <button class="btn-icon-sm" title="View details"><i class="fas fa-eye"></i></button>
+                                            <button class="btn-icon-sm" title="Add to portfolio"><i class="fas fa-plus"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox"></td>
+                                        <td class="address-cell">
+                                            <strong>2890 Riverside Dr</strong>
+                                            <span class="parcel-id">Parcel: 14-0234-0091-087</span>
+                                        </td>
+                                        <td>Cobb, GA</td>
+                                        <td><span class="badge">SFR</span></td>
+                                        <td>3 / 2</td>
+                                        <td>$125,000</td>
+                                        <td>$235,000</td>
+                                        <td><span class="metric-pill warning">31.8%</span></td>
+                                        <td class="positive">$52,100</td>
+                                        <td><span class="risk-badge medium">45</span></td>
+                                        <td><span class="score-badge">82</span></td>
+                                        <td>
+                                            <button class="btn-icon-sm" title="View details"><i class="fas fa-eye"></i></button>
+                                            <button class="btn-icon-sm" title="Add to portfolio"><i class="fas fa-plus"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="table-footer">
+                            <div class="pagination">
+                                <button class="btn-icon-sm"><i class="fas fa-chevron-left"></i></button>
+                                <button class="page-btn active">1</button>
+                                <button class="page-btn">2</button>
+                                <button class="page-btn">3</button>
+                                <span>...</span>
+                                <button class="page-btn">12</button>
+                                <button class="btn-icon-sm"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                            <div class="results-per-page">
+                                <span>Show:</span>
+                                <select class="input-sm">
+                                    <option>25</option>
+                                    <option>50</option>
+                                    <option>100</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Property Detail Modal (Hidden by default) -->
+    <div id="propertyModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>Property Details</h2>
+                <button class="btn-close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <!-- Property details will be dynamically loaded -->
+                <p>Property details loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="script-bidwise.js"></script>
+</body>
+</html>

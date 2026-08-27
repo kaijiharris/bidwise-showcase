@@ -1,0 +1,121 @@
+state: GA
+state_name: Georgia
+
+# State-level settings
+property_tax_rate: 0.0087  # Statewide average (0.87%)
+transfer_tax_per_1000: 1.00  # $1 per $1000 (plus county tax)
+redemption_period_months: 12  # Georgia has 12-month redemption for tax liens
+tax_lien_interest_rate: 20  # 20% annual interest on tax liens (very high!)
+
+# State-specific cost adjustments
+# NOTE: These rates are calibrated for TAX DEED properties — abandoned/delinquent
+# for 2-5+ years. They are intentionally higher than MLS fixer-upper rates.
+costs:
+  # Rehab costs per sqft (tax deed properties = neglected, deferred maintenance)
+  # Age brackets based on year_built:
+  #   light  = built after 2005 (<20 yrs) — cosmetic + systems check
+  #   medium = built 1980-2005           — standard rehab, mechanicals
+  #   heavy  = built before 1980         — plumbing, electrical, possibly lead/asbestos
+  rehab_per_sqft:
+    light: 35      # Post-2005: cosmetic but still distressed after years of neglect
+    medium: 55     # 1980-2005: full kitchen/bath, mechanicals, HVAC, roof likely needed
+    heavy: 85      # Pre-1980: heavy rehab — old systems, lead paint, structural unknowns
+  rehab_contingency_pct: 15  # 15% contingency (tax deeds hide surprises — was 10%)
+
+  # GA Tax Deed specific — REQUIRED costs often missed
+  quiet_title_cost: 3500     # Attorney fees for quiet title action (REQUIRED before resale in GA)
+  termite_inspection: 100    # Standard in GA
+
+  # Carrying period: GA tax deeds require quiet title BEFORE you can sell with clean title
+  # Timeline: 3-6 months quiet title + 3-6 months marketing/closing = 12 months minimum
+  carrying_months: 12        # (default.yaml has 6 — override for GA tax deeds)
+  insurance_per_sqft_annual: 0.45
+  utilities_monthly: 200     # Monthly utilities for vacant property
+  security_monthly: 150      # Vacant property security + lawn care
+  # Property tax during hold: use county-specific rate × ARV
+  # Fulton: 1.10%, Cobb: 0.98%, Gwinnett: 1.05%, DeKalb: ~1.10%
+
+  # Selling costs (deducted from ARV when computing net profit)
+  realtor_commission_pct: 6   # Standard GA listing agent + buyer agent
+  seller_closing_pct: 1       # Seller-side closing costs
+
+# Counties configuration
+counties:
+  fulton:
+    name: "Fulton County"
+    county_seat: "Atlanta"
+    
+    # Data sources
+    tax_commissioner: "https://www.fultontaxcommissioner.org"
+    assessor_portal: "https://www.qpublic.net/ga/fulton"
+    sheriff_sales: "https://www.fultonsheriff.org"
+    
+    # County-specific rates
+    property_tax_rate: 0.0110  # 1.10% (Atlanta metro area)
+    transfer_tax_per_1000: 1.00  # County tax (on top of state)
+    
+    # Market characteristics
+    median_home_price: 420000
+    avg_days_on_market: 28
+    investor_activity: "very_high"
+    major_metro: true
+    
+    # Rehab cost adjustments (multiplier on default)
+    rehab_cost_multiplier: 1.05  # 5% higher due to Atlanta market (reduced for distressed properties)
+    
+    # Tax lien notes
+    tax_lien_market: "active"
+    lien_auction_frequency: "monthly"
+  
+  gwinnett:
+    name: "Gwinnett County"
+    county_seat: "Lawrenceville"
+    
+    # Data sources
+    tax_commissioner: "https://www.gwinnettcounty.com/web/gwinnett/departments/taxcommissioner"
+    assessor_portal: "https://www.gwinnettassessor.com"
+    sheriff_sales: "https://www.gwinnettcountysheriff.com"
+    
+    # County-specific rates
+    property_tax_rate: 0.0105  # 1.05%
+    transfer_tax_per_1000: 1.00
+    
+    # Market characteristics
+    median_home_price: 375000
+    avg_days_on_market: 32
+    investor_activity: "high"
+    major_metro: true
+    
+    # Rehab cost adjustments
+    rehab_cost_multiplier: 1.10  # 10% higher due to metro Atlanta
+    
+    # Tax lien notes
+    tax_lien_market: "active"
+    lien_auction_frequency: "monthly"
+  
+  cobb:
+    name: "Cobb County"
+    county_seat: "Marietta"
+    
+    # Data sources
+    tax_commissioner: "https://www.cobbtax.org"
+    assessor_portal: "https://www.cobbassessor.org"
+    sheriff_sales: "https://www.cobbsheriff.org"
+    
+    # County-specific rates
+    property_tax_rate: 0.0098  # 0.98%
+    transfer_tax_per_1000: 1.00
+    
+    # Market characteristics
+    median_home_price: 410000
+    avg_days_on_market: 30
+    investor_activity: "very_high"
+    major_metro: true
+    desirable_schools: true
+    
+    # Rehab cost adjustments
+    rehab_cost_multiplier: 1.12  # 12% higher - premium market
+    
+    # Tax lien notes
+    tax_lien_market: "active"
+    lien_auction_frequency: "monthly"

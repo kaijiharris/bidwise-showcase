@@ -1,0 +1,43 @@
+state: PA
+state_name: Pennsylvania
+
+# State-level settings
+# PA transfer tax is typically 1% state + 1% local = 2% total
+transfer_tax_per_1000: 20.0
+redemption_period_months: 9 # Tax Upset Sale has no redemption, but Judicial can. Repository is "free and clear". Setup generic.
+# Repository sales are "free and clear" usually sold for costs.
+tax_lien_interest_rate: 0.0
+
+# State-specific cost adjustments
+costs:
+  insurance_per_sqft_annual: 0.60
+  termite_inspection: 0 # Less common requirement than south
+  winterization_cost: 350 # PA gets cold
+
+# Counties configuration
+counties:
+  wayne:
+    name: "Wayne County"
+    county_seat: "Honesdale"
+
+    # Data sources
+    tax_commissioner: "https://taxservices.waynecountypa.gov/"
+    assessor_portal: "https://waynecountypa.gov/169/Assessment-Office"
+    sheriff_sales: "https://taxservices.waynecountypa.gov/TaxSales/Repository/2026-02-20"
+
+    # County-specific rates
+    property_tax_rate: 0.015 # Approx 1.5%
+    transfer_tax_per_1000: 20.0 # 2% total
+
+    # Market characteristics
+    median_home_price: 280000 
+    avg_days_on_market: 45
+    investor_activity: "moderate"
+    major_metro: false # Rural/Poconos area
+
+    # Rehab cost adjustments
+    rehab_cost_multiplier: 1.05 # Slightly higher due to rural logistics/contractor availability?
+
+    # Tax lien notes
+    tax_lien_market: "repository"
+    lien_auction_frequency: "quarterly"

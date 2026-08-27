@@ -1,0 +1,104 @@
+system:
+  name: "Real Estate Investment Analyzer"
+  version: "1.0.0-mvp"
+  
+database:
+  pool_size: 10
+  pool_recycle: 3600
+  echo: false
+  
+logging:
+  level: INFO
+  format: "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan> - <level>{message}</level>"
+  file: logs/rei_system.log
+  rotation: "10 MB"
+  retention: "30 days"
+  
+ingestion:
+  schedule_auctions: "0 6 * * *"  # Daily at 6am (cron format)
+  schedule_liens: "0 6 * * 0"      # Weekly on Sunday at 6am
+  retry_attempts: 3
+  retry_delay_seconds: 60
+  request_delay_seconds: 2  # Respectful scraping delay
+  batch_size: 100  # Records per batch insert
+  
+# Default cost assumptions (override in market-specific configs)
+costs:
+  # Rehab costs per sqft
+  rehab_per_sqft:
+    light: 15      # Cosmetic: paint, flooring, fixtures
+    medium: 40     # Moderate: kitchen/bath updates, mechanicals
+    heavy: 75      # Extensive: structural, full renovation
+  
+  # Transaction costs
+  buyers_premium_pct: 10  # Typical auction buyer's premium
+  closing_costs_pct: 3    # Title, escrow, misc closing
+  title_insurance_pct: 0.5
+  inspection_cost: 500
+  appraisal_cost: 500
+  
+  # Selling costs (for flip)
+  realtor_commission_pct: 6
+  seller_closing_pct: 1
+  
+  # Carrying costs (flip assumption: 6 months)
+  carrying_months: 6
+  insurance_per_sqft_annual: 0.50
+  utilities_monthly: 200
+  property_tax_buffer_pct: 1.2  # Multiplier for property tax (in case of reassessment)
+  
+  # Financing assumptions (if needed)
+  down_payment_pct: 20
+  interest_rate: 7.5
+  loan_term_years: 30
+  
+# Scoring configuration
+scoring:
+  # Component weights (must sum to 1.0)
+  weights:
+    roi: 0.50         # Return on investment
+    risk: 0.30        # Composite risk score (inverted)
+    filter_match: 0.20  # How well property matches user criteria
+  
+  # ROI thresholds for scoring (higher = better)
+  roi_thresholds:
+    excellent: 30  # 30%+ ROI = 100 points
+    good: 20       # 20-30% = 75 points
+    fair: 10       # 10-20% = 50 points
+    poor: 0        # <10% = 25 points or less
+  
+  # Risk component weights (must sum to 1.0)
+  risk_components:
+    crime: 0.40
+    flood: 0.40
+    fire: 0.20
+  
+  # Risk thresholds (0-100 scale, lower = less risky)
+  risk_thresholds:
+    low: 30       # <30 = 100 points
+    medium: 60    # 30-60 = 50 points
+    high: 100     # >60 = 0 points
+
+# Enrichment settings
+enrichment:
+  # Comps search parameters
+  comps_radius_miles: 1.0
+  comps_lookback_months: 6
+  comps_sqft_variance_pct: 30  # ±30% sqft range
+  comps_min_count: 3  # Minimum comps needed for confidence
+  
+  # Risk data sources
+  crime_api: "fbi"  # Options: 'fbi', 'local', 'none'
+  flood_source: "fema"  # Options: 'fema', 'none'
+  
+# Query settings
+query:
+  min_candidates: 100  # Minimum properties to return
+  exceptional_roi_multiplier: 2.0  # ROI must be 2x user minimum
+  exceptional_roi_max_filter_violations: 2  # Max filters violated for exceptional list
+  
+# Export settings
+export:
+  max_rows: 500  # Cap on spreadsheet rows
+  include_exceptional: true
+  include_summary_sheet: true

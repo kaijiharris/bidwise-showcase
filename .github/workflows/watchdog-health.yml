@@ -1,0 +1,95 @@
+name: Watchdog health
+
+# Daily aliveness check for the tax-sale watchdog cron (pg_cron 13:00 UTC →
+# notify-tax-sale edge function → tax_sale_monitor_runs row). Scheduled 2.5h
+# after the watchdog so a healthy day always has a fresh row.
+#
+# Failure modes this catches (all previously silent — the cron 401'd every day
+# 7/14–7/17 and nobody knew):
+#   • cron job deleted / inactive / vault secret drift  → run log goes stale
+#   • edge function crashing before logRun              → run log goes stale
+#   • a county source erroring for days (e.g. DeKalb's 503 streak, 7/18+)
+#     → warning annotation, visible in the Actions summary
+#
+# A failed run emails the repo owner via GitHub's default workflow
+# notifications — free alerting, no new services. Uses the same repo secrets
+# as keep-supabase-alive.yml. The RPC is the anon-callable SECURITY DEFINER
+# function from migration 027 (aggregates only — the run log itself stays
+# RLS-locked).
+#
+# Verified-external outages (e.g. a county's own DNS broken) can be
+# acknowledged per-source in notify-tax-sale/sources.ts (acknowledgedOutage,
+# with an expiry date) — those failures are routed out of the run's `errors`
+# so this alarm stays meaningful for everything else, and re-arm on expiry.
+
+on:
+  schedule:
+    - cron: '30 15 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      # Interim daily web-uptime probe (checklist E). Piggybacks on this
+      # existing daily job so it costs zero extra Actions minutes on the
+      # private repo — a dedicated 1–5 min external monitor is still the
+      # checklist ask; until one exists, "site down" at least surfaces within
+      # a day instead of never. curl -f fails the job (→ owner email) on any
+      # non-200; the grep catches a 200 that reports ok:false.
+      - name: Check web /api/health
+        run: |
+          set -euo pipefail
+          RESP=$(curl -sf --max-time 30 "https://www.bidwiseinvest.com/api/health")
+          echo "web health: $RESP"
+          echo "$RESP" | grep -q '"ok":true' || {
+            echo "WEB DOWN: /api/health responded without ok:true"; exit 1; }
+      - name: Check watchdog freshness
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+          RESP=$(curl -sf --max-time 30 -X POST "$SUPABASE_URL/rest/v1/rpc/watchdog_health" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "Content-Type: application/json" -d '{}')
+          echo "watchdog_health: $RESP"
+          python3 - "$RESP" <<'PY'
+          import json, sys
+
+          STALE_HOURS = 36    # daily cron + generous slack
+          ERR_RUN_ALERT = 3   # a source failing EVERY one of the last 3 daily
+                              # runs = a persistent outage, not a transient blip
+
+          health = json.loads(sys.argv[1])
+          hours = health.get("hours_since_last_run")
+          err_runs = int(health.get("recent_runs_with_errors") or 0)
+
+          if hours is None:
+              sys.exit("STALE: no watchdog runs recorded at all — cron never fired")
+          hours = float(hours)
+          if hours > STALE_HOURS:
+              sys.exit(
+                  f"STALE: last watchdog run {hours:.1f}h ago (>{STALE_HOURS}h). "
+                  "Check cron.job, net._http_response codes, and the function's "
+                  "auth secret (see notify-tax-sale/DEPLOY.md)."
+              )
+          # A persistent source outage was previously only a ::warning:: annotation
+          # — invisible unless someone opened the Actions run. It stayed silent
+          # through DeKalb's 5-day 503 streak (2026-07-18+). Fail loudly instead so
+          # GitHub emails the owner, same as the stale case. The site's per-county
+          # "as of <date>" copy (analysisStale) keeps customers honest meanwhile.
+          if err_runs >= ERR_RUN_ALERT:
+              sys.exit(
+                  f"SOURCE OUTAGE: every one of the last {err_runs} daily watchdog "
+                  f"runs had source errors — a county listing has been failing its "
+                  f"check for ~{err_runs} days. Inspect tax_sale_monitor_runs.errors "
+                  "in Supabase for which source, then fix its config or redeploy the "
+                  "watchdog (a merged fix may be pending an operator function deploy)."
+              )
+          print(f"OK: last run {hours:.1f}h ago; {err_runs}/3 recent runs had source errors")
+          PY

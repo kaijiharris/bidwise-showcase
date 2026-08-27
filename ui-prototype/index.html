@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deal Finder Pro - Real Estate Investment Analysis</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Top Command Bar -->
+    <header class="top-bar">
+        <div class="top-bar-left">
+            <h1 class="app-title">Deal Finder Pro</h1>
+            <select id="auctionSelector" class="auction-selector">
+                <option>Fulton County, GA - January 2026</option>
+                <option>Wayne County, PA - February 2026</option>
+                <option>Faribault County, MN - December 2025</option>
+            </select>
+        </div>
+        <div class="top-bar-right">
+            <button class="btn btn-secondary" id="lookupCountyBtn">
+                <i class="fas fa-search-location"></i> Lookup New County
+            </button>
+            <button class="btn btn-secondary" id="importBtn">
+                <i class="fas fa-upload"></i> Import Auction
+            </button>
+            <button class="btn btn-primary" id="exportBtn">
+                <i class="fas fa-download"></i> Export Results
+            </button>
+            <button class="btn btn-icon" id="refreshBtn" title="Refresh data">
+                <i class="fas fa-sync"></i>
+            </button>
+            <button class="btn btn-icon" id="settingsBtn" title="Settings">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Left Panel - Filters & Stats -->
+        <aside class="left-panel">
+            <div class="card">
+                <h3 class="section-header">Quick Stats</h3>
+                <div class="stat-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Properties</span>
+                        <span class="stat-value" id="totalCount">247</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Top Deals</span>
+                        <span class="stat-value stat-success" id="topDealsCount">18</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg ROI</span>
+                        <span class="stat-value" id="avgROI">24.3%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg Profit</span>
+                        <span class="stat-value" id="avgProfit">$45,230</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="section-header">
+                    Filters
+                    <button class="btn-icon-small" id="resetFiltersBtn" title="Reset to defaults">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </h3>
+
+                <!-- Financial Filters -->
+                <div class="filter-section">
+                    <h4 class="filter-section-title">Financial Criteria</h4>
+
+                    <div class="filter-group">
+                        <label for="minROI">Min ROI (%)</label>
+                        <input type="range" id="minROI" min="0" max="100" value="15" class="slider">
+                        <span class="slider-value" id="minROIValue">15%</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="maxStartingBid">Max Starting Bid</label>
+                        <input type="text" id="maxStartingBid" placeholder="e.g., $150,000" class="input">
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="maxRehab">Max Rehab Cost</label>
+                        <input type="text" id="maxRehab" value="$100,000" class="input">
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="minProfit">Min Projected Profit</label>
+                        <input type="text" id="minProfit" placeholder="e.g., $30,000" class="input">
+                    </div>
+                </div>
+
+                <!-- Property Filters -->
+                <div class="filter-section">
+                    <h4 class="filter-section-title">Property Details</h4>
+
+                    <div class="filter-group">
+                        <label for="propertyType">Property Type</label>
+                        <select id="propertyType" class="select">
+                            <option value="all">All Types</option>
+                            <option value="single-family">Single Family</option>
+                            <option value="townhouse">Townhouse</option>
+                            <option value="condo">Condo</option>
+                            <option value="multi-family">Multi-Family</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-row">
+                        <div class="filter-group" style="flex: 1;">
+                            <label for="minBeds">Min Beds</label>
+                            <select id="minBeds" class="select">
+                                <option value="">Any</option>
+                                <option value="1">1+</option>
+                                <option value="2">2+</option>
+                                <option value="3">3+</option>
+                                <option value="4">4+</option>
+                            </select>
+                        </div>
+                        <div class="filter-group" style="flex: 1;">
+                            <label for="minBaths">Min Baths</label>
+                            <select id="minBaths" class="select">
+                                <option value="">Any</option>
+                                <option value="1">1+</option>
+                                <option value="2">2+</option>
+                                <option value="3">3+</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="minSqFt">Min Square Feet</label>
+                        <input type="number" id="minSqFt" placeholder="e.g., 1000" class="input">
+                    </div>
+                </div>
+
+                <!-- Risk Filters -->
+                <div class="filter-section">
+                    <h4 class="filter-section-title">Risk & Quality</h4>
+
+                    <div class="filter-group">
+                        <label for="riskLevel">Risk Level</label>
+                        <select id="riskLevel" class="select">
+                            <option value="all">All Levels</option>
+                            <option value="low">Low Risk Only</option>
+                            <option value="medium">Medium or Lower</option>
+                            <option value="high">Include High Risk</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="minDealScore">Min Deal Score</label>
+                        <input type="range" id="minDealScore" min="0" max="100" value="0" class="slider">
+                        <span class="slider-value" id="minDealScoreValue">0</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="topDealsOnly">
+                            <span>Top Deals Only (80+ score)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-block" id="applyFilters">
+                    <i class="fas fa-filter"></i> Apply Filters
+                </button>
+                <button class="btn btn-secondary btn-block" id="clearFilters">
+                    <i class="fas fa-times"></i> Clear All
+                </button>
+
+                <div class="active-filters-count" id="activeFiltersCount" style="display: none;">
+                    <i class="fas fa-info-circle"></i> <span id="filterCountText">0 filters active</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="section-header">Saved Views</h3>
+                <div class="saved-views-list">
+                    <div class="saved-view-item">
+                        <span>High ROI Flips</span>
+                        <button class="btn-icon-small"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="saved-view-item">
+                        <span>Low Risk Rentals</span>
+                        <button class="btn-icon-small"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <button class="btn btn-link btn-block">+ Save Current View</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn" data-tab="dashboard">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </button>
+                <button class="tab-btn active" data-tab="properties">
+                    <i class="fas fa-table"></i> Properties
+                </button>
+                <button class="tab-btn" data-tab="best-deals">
+                    <i class="fas fa-star"></i> Best Deals
+                </button>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content">
+                <div class="dashboard-grid">
+                    <div class="card dashboard-card">
+                        <h3 class="section-header">Deal Distribution</h3>
+                        <div class="chart-placeholder">
+                            <canvas id="dealChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card dashboard-card">
+                        <h3 class="section-header">Risk Distribution</h3>
+                        <div class="chart-placeholder">
+                            <canvas id="riskChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="section-header">Top 5 Deals</h3>
+                    <div class="mini-grid" id="topDealsGrid">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Properties Grid Tab -->
+            <div id="properties" class="tab-content active">
+                <div class="toolbar">
+                    <button class="btn btn-secondary" id="columnsBtn">
+                        <i class="fas fa-columns"></i> Columns
+                    </button>
+                    <button class="btn btn-secondary" id="exportVisibleBtn">
+                        <i class="fas fa-file-export"></i> Export Visible
+                    </button>
+                    <div class="toolbar-spacer"></div>
+                    <input type="text" id="quickFilter" class="input" placeholder="Quick search..." style="width: 250px;">
+                    <button class="btn btn-icon" id="clearQuickFilter">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="grid-container">
+                    <table class="data-grid" id="propertiesGrid">
+                        <thead>
+                            <tr>
+                                <th class="sortable frozen">Address <i class="fas fa-sort"></i></th>
+                                <th class="sortable">City <i class="fas fa-sort"></i></th>
+                                <th class="sortable">Beds <i class="fas fa-sort"></i></th>
+                                <th class="sortable">Baths <i class="fas fa-sort"></i></th>
+                                <th class="sortable">Sq Ft <i class="fas fa-sort"></i></th>
+                                <th class="sortable">Starting Bid <i class="fas fa-sort"></i></th>
+                                <th class="sortable">ARV <i class="fas fa-sort"></i></th>
+                                <th class="sortable">Est. Rehab <i class="fas fa-sort"></i></th>
+                                <th class="sortable">Proj. Profit <i class="fas fa-sort"></i></th>
+                                <th class="sortable">ROI <i class="fas fa-sort"></i></th>
+                                <th class="sortable">Deal Score <i class="fas fa-sort"></i></th>
+                                <th>Risk <i class="fas fa-sort"></i></th>
+                                <th>Recommendation</th>
+                            </tr>
+                        </thead>
+                        <tbody id="propertiesTableBody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Best Deals Tab -->
+            <div id="best-deals" class="tab-content">
+                <div class="ranking-controls card">
+                    <h3 class="section-header">Ranking Criteria</h3>
+                    <div class="ranking-grid">
+                        <div class="ranking-control">
+                            <label>ROI Weight: <span id="roiWeightValue">50%</span></label>
+                            <input type="range" id="roiWeight" min="0" max="100" value="50" class="slider">
+                        </div>
+                        <div class="ranking-control">
+                            <label>Discount Weight: <span id="discountWeightValue">30%</span></label>
+                            <input type="range" id="discountWeight" min="0" max="100" value="30" class="slider">
+                        </div>
+                        <div class="ranking-control">
+                            <label>Risk Weight: <span id="riskWeightValue">20%</span></label>
+                            <input type="range" id="riskWeight" min="0" max="100" value="20" class="slider">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="recalculateRanks">Recalculate Rankings</button>
+                </div>
+
+                <div id="rankedDealsList">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Detail Panel -->
+        <aside class="right-panel" id="detailPanel">
+            <button class="panel-close" id="closeDetailPanel">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div class="detail-content" id="detailContent">
+                <p class="detail-placeholder">Select a property from the grid to view details</p>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Status Bar -->
+    <footer class="status-bar">
+        <span id="statusProperties">Properties: 247</span>
+        <span id="statusFiltered">Filtered: 247</span>
+        <span id="statusSelected">Selected: None</span>
+    </footer>
+
+    <!-- Export Modal -->
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Export Auction Analysis</h2>
+                <button class="modal-close" id="closeExportModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Export Scope</label>
+                    <label class="radio-label">
+                        <input type="radio" name="exportScope" value="all" checked>
+                        <span>Export all properties</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="exportScope" value="filtered">
+                        <span>Export filtered properties only</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="exportScope" value="selected">
+                        <span>Export selected properties only</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" checked>
+                        <span>Include internal analysis notes</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" checked>
+                        <span>Include comparable properties</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" checked>
+                        <span>Include risk scores and explanations</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Output Format</label>
+                    <select class="select">
+                        <option>Excel (.xlsx)</option>
+                        <option>CSV (.csv)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelExport">Cancel</button>
+                <button class="btn btn-primary" id="confirmExport">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- County Lookup Modal -->
+    <div id="countyLookupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Lookup New County</h2>
+                <button class="modal-close" id="closeCountyLookupModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-description">
+                    Search for a county that hasn't been analyzed yet. The system will fetch auction data,
+                    enrich properties with comps and risk scores, and populate the dashboard.
+                </p>
+
+                <div class="form-group">
+                    <label class="form-label">County Name</label>
+                    <input type="text" id="countyName" class="input" placeholder="e.g., Fulton" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">State</label>
+                    <select id="stateName" class="select">
+                        <option value="">Select State</option>
+                        <option value="GA">Georgia (GA)</option>
+                        <option value="PA">Pennsylvania (PA)</option>
+                        <option value="MN">Minnesota (MN)</option>
+                        <option value="FL">Florida (FL)</option>
+                        <option value="TX">Texas (TX)</option>
+                        <option value="CA">California (CA)</option>
+                        <option value="NC">North Carolina (NC)</option>
+                        <option value="SC">South Carolina (SC)</option>
+                        <option value="TN">Tennessee (TN)</option>
+                        <option value="AL">Alabama (AL)</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label">Strategy</label>
+                        <select id="strategyType" class="select">
+                            <option value="flip">Fix & Flip</option>
+                            <option value="rental">Buy & Hold Rental</option>
+                            <option value="wholesale">Wholesale</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label">Budget</label>
+                        <input type="text" id="budget" class="input" value="$200,000">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label">Min ROI (%)</label>
+                        <input type="number" id="minROIInput" class="input" value="20" min="0" max="100">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label">Max Risk Score</label>
+                        <input type="number" id="maxRiskInput" class="input" value="50" min="0" max="100">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Max Properties to Process (optional)</label>
+                    <input type="number" id="maxProperties" class="input" placeholder="Leave blank for all">
+                    <small style="color: var(--text-secondary); font-size: 12px;">
+                        For testing, you can limit the number of properties processed
+                    </small>
+                </div>
+
+                <div id="lookupStatus" class="lookup-status" style="display: none;">
+                    <div class="status-content">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span id="lookupStatusText">Initializing...</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="lookupProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div id="lookupResult" class="lookup-result" style="display: none;">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelCountyLookup">Cancel</button>
+                <button class="btn btn-primary" id="startCountyLookup">
+                    <i class="fas fa-search"></i> Start Analysis
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p id="loadingText">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Help -->
+    <div id="shortcutsModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Keyboard Shortcuts</h2>
+                <button class="modal-close" id="closeShortcutsModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="shortcuts-grid">
+                    <div class="shortcut-item">
+                        <kbd>Ctrl</kbd> + <kbd>F</kbd>
+                        <span>Focus Quick Filter</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl</kbd> + <kbd>E</kbd>
+                        <span>Export Data</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl</kbd> + <kbd>N</kbd>
+                        <span>Lookup New County</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl</kbd> + <kbd>R</kbd>
+                        <span>Refresh Data</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>↑</kbd> / <kbd>↓</kbd>
+                        <span>Navigate Grid Rows</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Enter</kbd>
+                        <span>Open Detail View</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Esc</kbd>
+                        <span>Close Panels/Modals</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>?</kbd>
+                        <span>Show This Help</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

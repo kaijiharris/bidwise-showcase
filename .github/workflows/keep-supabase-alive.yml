@@ -1,0 +1,22 @@
+name: Keep Supabase Alive
+# Pings the Supabase project every 3 days to prevent free-tier pausing.
+# Remove this file once you upgrade to Supabase Pro.
+
+on:
+  schedule:
+    - cron: '0 8 */3 * *'   # Every 3 days at 8am UTC
+  workflow_dispatch:          # Allow manual trigger
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST API
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/")
+          echo "Supabase ping status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "Warning: Supabase returned $STATUS"
+          fi

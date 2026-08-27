@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: transparent; }
+  #stage { position: relative; overflow: hidden; }
+  svg { display: block; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+// ── BidWise brand tokens (from mobile/theme/palette.ts) ──────────────────────
+const NAVY_DEEP   = '#08111F'; // midnight — canvas
+const NAVY_MID    = '#0C1A2E'; // slightly lifted panel
+const BLUE        = '#10A7FF'; // brand.primary — BidWise Blue
+const CYAN        = '#2DE2FF'; // brand.cyan — Electric Cyan
+const DEEP_BLUE   = '#0B5CFF'; // brand.deep
+const AMBER       = '#F5A623'; // auction accent (blueprint survey line / gavel spark)
+const GRID        = 'rgba(45,226,255,0.10)'; // faint cyan blueprint grid
+
+// Variants: icon | adaptive | splash | favicon | monochrome
+const params = new URLSearchParams(location.search);
+const variant = params.get('v') || 'icon';
+const SIZE = parseInt(params.get('size') || '1024', 10);
+
+// ── SVG builder ──────────────────────────────────────────────────────────────
+// The mark: a monogram "B" built from blueprint geometry — two stacked counters
+// (upper + lower bowl) rendered as rounded architectural forms in a blue→cyan
+// gradient, seated on an amber survey baseline. Reads as "B" for BidWise and as
+// a stacked-ledger / building silhouette. Works at 48px and 1024px.
+
+function markSVG({ bg, grid, transparent, mono }) {
+  const vb = 1024;
+  const gradId = 'g' + Math.random().toString(36).slice(2, 7);
+  const glowId = 'glow' + Math.random().toString(36).slice(2, 7);
+
+  const fillColor = mono ? '#FFFFFF' : `url(#${gradId})`;
+  const baselineColor = mono ? '#FFFFFF' : AMBER;
+
+  // Blueprint grid lines
+  let gridLines = '';
+  if (grid) {
+    const step = 128;
+    for (let x = step; x < vb; x += step) {
+      gridLines += `<line x1="${x}" y1="0" x2="${x}" y2="${vb}" stroke="${GRID}" stroke-width="2"/>`;
+    }
+    for (let y = step; y < vb; y += step) {
+      gridLines += `<line x1="0" y1="${y}" x2="${vb}" y2="${y}" stroke="${GRID}" stroke-width="2"/>`;
+    }
+  }
+
+  const bgRect = transparent ? '' : `<rect width="${vb}" height="${vb}" fill="${bg}"/>`;
+
+  // ── The "B" as a FILLED glyph with two counters (evenodd holes). ──
+  // Canonical B: vertical spine on the left, two D-shaped bowls bulging right.
+  // Outer silhouette is one path; the two counters are cut with fill-rule:evenodd.
+  const top = 232, bottom = 792;         // glyph vertical extent
+  const left = 336;                       // spine left edge
+  const stem = 150;                       // spine (stem) thickness
+  const mid = 512;                        // waist center
+  const waistTop = mid - 34, waistBot = mid + 34; // middle bar band
+  const upperR = 168;                     // upper bowl outer radius (x)
+  const lowerR = 196;                     // lower bowl outer radius (x)
+  const upperRight = left + stem + 150;   // where upper bowl bulges to
+  const lowerRight = left + stem + 190;
+
+  // Outer contour (clockwise): up the left spine, across the top into upper bowl,
+  // curve down to waist, small step, lower bowl out and down, back along bottom.
+  const outer =
+    `M ${left} ${top} ` +
+    `L ${upperRight} ${top} ` +
+    `A ${upperR} ${(waistTop - top) / 2} 0 0 1 ${upperRight} ${waistTop} ` +
+    `L ${left + stem} ${waistTop} ` +           // step back toward spine at waist
+    `L ${lowerRight} ${waistBot} ` +
+    `A ${lowerR} ${(bottom - waistBot) / 2} 0 0 1 ${lowerRight} ${bottom} ` +
+    `L ${left} ${bottom} Z`;
+
+  // Upper counter (hole)
+  const upCx = left + stem, upTopY = top + stem, upBotY = waistTop - 34;
+  const upperCounter =
+    `M ${upCx} ${upTopY} ` +
+    `L ${upperRight - 40} ${upTopY} ` +
+    `A ${upperR - 90} ${(upBotY - upTopY) / 2} 0 0 1 ${upperRight - 40} ${upBotY} ` +
+    `L ${upCx} ${upBotY} Z`;
+
+  // Lower counter (hole)
+  const loCx = left + stem, loTopY = waistBot + 34, loBotY = bottom - stem;
+  const lowerCounter =
+    `M ${loCx} ${loTopY} ` +
+    `L ${lowerRight - 40} ${loTopY} ` +
+    `A ${lowerR - 90} ${(loBotY - loTopY) / 2} 0 0 1 ${lowerRight - 40} ${loBotY} ` +
+    `L ${loCx} ${loBotY} Z`;
+
+  const bPath = `<path d="${outer} ${upperCounter} ${lowerCounter}"
+    fill="${fillColor}" fill-rule="evenodd"/>`;
+
+  // Amber survey baseline under the mark (auction "sold" / ledger line + node).
+  const baseline =
+    `<rect x="${left}" y="${bottom + 52}" width="360" height="34" rx="17" fill="${baselineColor}"/>` +
+    (mono ? '' : `<circle cx="${left + 388}" cy="${bottom + 69}" r="30" fill="${baselineColor}"/>`);
+
+  const defs = mono ? '' : `
+    <defs>
+      <linearGradient id="${gradId}" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="${CYAN}"/>
+        <stop offset="0.55" stop-color="${BLUE}"/>
+        <stop offset="1" stop-color="${DEEP_BLUE}"/>
+      </linearGradient>
+      <filter id="${glowId}" x="-25%" y="-25%" width="150%" height="150%">
+        <feGaussianBlur stdDeviation="12" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>`;
+
+  const markGroup =
+    `<g ${mono ? '' : `filter="url(#${glowId})"`}>${bPath}</g>${baseline}`;
+
+  return `<svg viewBox="0 0 ${vb} ${vb}" width="${SIZE}" height="${SIZE}" xmlns="http://www.w3.org/2000/svg">
+    ${defs}
+    ${bgRect}
+    ${gridLines}
+    ${markGroup}
+  </svg>`;
+}
+
+let svg;
+if (variant === 'icon') {
+  // Full store icon: opaque navy, blueprint grid, glowing gradient B + amber baseline.
+  svg = markSVG({ bg: NAVY_DEEP, grid: true, transparent: false, mono: false });
+} else if (variant === 'adaptive') {
+  // Android adaptive FOREGROUND: transparent, mark inset to survive the safe-zone
+  // circular mask (Android crops the outer ~18%). No grid (bg is separate layer).
+  svg = markSVG({ bg: NAVY_DEEP, grid: false, transparent: true, mono: false });
+} else if (variant === 'adaptive-bg') {
+  // Android adaptive BACKGROUND layer: solid navy, faint grid.
+  svg = `<svg viewBox="0 0 1024 1024" width="${SIZE}" height="${SIZE}" xmlns="http://www.w3.org/2000/svg">
+      <rect width="1024" height="1024" fill="${NAVY_DEEP}"/>
+      ${(() => { let g=''; for (let x=128;x<1024;x+=128){g+=`<line x1="${x}" y1="0" x2="${x}" y2="1024" stroke="${GRID}" stroke-width="2"/>`;} for (let y=128;y<1024;y+=128){g+=`<line x1="0" y1="${y}" x2="1024" y2="${y}" stroke="${GRID}" stroke-width="2"/>`;} return g; })()}
+    </svg>`;
+} else if (variant === 'monochrome') {
+  // Android themed-icon monochrome layer: white mark on transparent.
+  svg = markSVG({ bg: 'transparent', grid: false, transparent: true, mono: true });
+} else if (variant === 'splash') {
+  // Splash mark: transparent, no grid, no baseline glow needed (shown on navy bg
+  // via app.json splash backgroundColor). Slightly larger optical weight.
+  svg = markSVG({ bg: 'transparent', grid: false, transparent: true, mono: false });
+} else if (variant === 'favicon') {
+  // Expo web favicon: opaque navy tile, mark, no grid (too fine at 48px).
+  svg = markSVG({ bg: NAVY_DEEP, grid: false, transparent: false, mono: false });
+}
+
+// For adaptive foreground we must inset the mark into Android's safe zone.
+const stage = document.getElementById('stage');
+stage.style.width = SIZE + 'px';
+stage.style.height = SIZE + 'px';
+
+if (variant === 'adaptive') {
+  // Inset the mark to ~66% so it survives the circular/rounded-square masks.
+  const inset = Math.round(SIZE * 0.17);
+  stage.innerHTML = `<div style="position:absolute;inset:${inset}px;">${
+    markSVG({ bg: 'transparent', grid: false, transparent: true, mono: false })
+      .replace(`width="${SIZE}"`, `width="${SIZE - inset*2}"`)
+      .replace(`height="${SIZE}"`, `height="${SIZE - inset*2}"`)
+  }</div>`;
+} else if (variant === 'monochrome') {
+  const inset = Math.round(SIZE * 0.17);
+  stage.innerHTML = `<div style="position:absolute;inset:${inset}px;">${
+    markSVG({ bg: 'transparent', grid: false, transparent: true, mono: true })
+      .replace(`width="${SIZE}"`, `width="${SIZE - inset*2}"`)
+      .replace(`height="${SIZE}"`, `height="${SIZE - inset*2}"`)
+  }</div>`;
+} else {
+  stage.innerHTML = svg;
+}
+
+// Signal readiness for Playwright.
+window.__ready = true;
+</script>
+</body>
+</html>

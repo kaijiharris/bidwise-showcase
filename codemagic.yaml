@@ -1,0 +1,92 @@
+workflows:
+  ios-workflow:
+    name: BidWiseAI iOS
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.bidwiseai.app
+      vars:
+        BUNDLE_ID: com.bidwiseai.app
+        XCODE_SCHEME: BidWiseAI
+      xcode: latest
+
+    # AUTO-BUILD DISABLED 2026-06-11 — re-enable when starting Track B (iOS:
+    # Apple Developer + RevenueCat). While commented out, codemagic builds ONLY
+    # when started manually (codemagic UI → "Start new build"), so merging web
+    # changes to `main` does NOT burn iOS build minutes. To restore auto-build
+    # on every push to main, simply uncomment the `triggering` block below.
+    # triggering:
+    #   events:
+    #     - push
+    #   branch_patterns:
+    #     - pattern: main
+    #       include: true
+
+    scripts:
+      - name: Pre-archive checks (typecheck + lint + tests)
+        script: |
+          # Gate the TestFlight publish on JS-layer quality checks.
+          # `set -e` ensures any failure exits non-zero and stops the pipeline
+          # BEFORE the archive/publish steps — never ship a broken binary.
+          set -e
+          cd mobile
+          npm ci
+          echo "--- TypeScript typecheck ---"
+          npx tsc --noEmit
+          echo "--- Expo lint ---"
+          npx expo lint
+          if npm run | grep -qE '^  test$'; then
+            echo "--- Mobile tests ---"
+            npm test
+          else
+            echo "No mobile test script defined; skipping tests."
+          fi
+
+      - name: Install xcodegen
+        script: brew install xcodegen
+
+      - name: Generate Xcode project
+        script: |
+          cd ios
+          xcodegen generate
+
+      - name: Set build number from App Store
+        script: |
+          LATEST=$(app-store-connect get-latest-build-number "$BUNDLE_ID" 2>/dev/null || echo "0")
+          agvtool new-version -all $((LATEST + 1))
+        working_directory: ios
+
+      - name: Build archive
+        script: |
+          xcodebuild \
+            -project ios/BidWiseAI.xcodeproj \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Release \
+            -archivePath build/BidWiseAI.xcarchive \
+            -destination "generic/platform=iOS" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            CODE_SIGN_STYLE=Automatic \
+            archive
+
+      - name: Export IPA
+        script: |
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/BidWiseAI.xcarchive \
+            -exportOptionsPlist ios/exportOptions.plist \
+            -exportPath build/ipa \
+            APPLE_TEAM_ID="$APPLE_TEAM_ID"
+
+    artifacts:
+      - build/ipa/*.ipa
+      - build/BidWiseAI.xcarchive/**/*.dSYM
+
+    publishing:
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: true

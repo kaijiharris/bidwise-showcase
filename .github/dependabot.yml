@@ -1,0 +1,20 @@
+# Dependabot — keeps the SHA-pinned GitHub Actions current (it updates the
+# pinned commit AND the trailing "# vX.Y.Z" comment), so pinning doesn't mean
+# going stale. Weekly, grouped into one PR to cut noise. Scoped to
+# github-actions only; npm/pip are deliberately not enabled here to avoid
+# dependency-PR churn on the app packages.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "dependencies"
+      - "github-actions"

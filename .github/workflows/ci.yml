@@ -1,0 +1,166 @@
+name: CI
+
+# Merge gate: runs typecheck / lint / build / tests for web, mobile, and the
+# Python pipeline on every PR and on push to main. Any job failing fails the
+# workflow, which blocks the merge.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    name: Web (typecheck · build · test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    env:
+      # Non-functional placeholders so `next build` does not crash on missing
+      # secrets. These are NOT real credentials — they only satisfy module-scope
+      # client initialization (Supabase / Stripe) during the build.
+      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+      SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role-key
+      STRIPE_SECRET_KEY: STRIPE-TEST-KEY-PLACEHOLDER
+      STRIPE_WEBHOOK_SECRET: whsec_placeholder
+      # Stripe price IDs are presence-validated at build time (page-data
+      # collection); without these, `next build` aborts before it finishes.
+      STRIPE_STARTER_MONTHLY: price_placeholder
+      STRIPE_STARTER_ANNUAL: price_placeholder
+      STRIPE_PRO_MONTHLY: price_placeholder
+      STRIPE_PRO_ANNUAL: price_placeholder
+      STRIPE_EXPERT_MONTHLY: price_placeholder
+      STRIPE_EXPERT_ANNUAL: price_placeholder
+      NEXT_PUBLIC_APP_URL: https://example.com
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # tests/mobile-data-freshness.test.ts imports mobile/lib/format.ts so the
+      # web and mobile "as of" thresholds can be pinned together in one
+      # assertion. Vite resolves the nearest tsconfig for every file it
+      # transforms, and mobile/tsconfig.json `extends: "expo/tsconfig.base"` —
+      # unresolvable without mobile's deps, which is why that test passes on a
+      # dev checkout and failed only here. esbuild.tsconfigRaw does NOT skip the
+      # lookup (tried it; Vite calls loadTsconfigJsonForFile regardless). This
+      # install is the honest cost of a cross-package test. The alternative is
+      # duplicating the constant and letting the two drift apart silently, which
+      # is the exact failure the test exists to prevent.
+      - name: Install mobile dependencies (for the cross-package freshness test)
+        run: npm ci
+        working-directory: mobile
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Unit tests
+        run: npm test
+
+  mobile:
+    name: Mobile (typecheck · lint)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npx expo lint
+
+  python:
+    name: Python (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      # Guard: fail fast on duplicate migration numeric prefixes (two 016s and
+      # two 020s landed from parallel merges in 2026-07; renumbered to 023/024).
+      # Stdlib-only, so it runs before dependency install.
+      - name: Check migration numbering
+        run: python scripts/check_migration_numbers.py
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest
+
+  deno:
+    name: Edge functions (deno)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: supabase/functions/notify-tax-sale
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
+        with:
+          deno-version: v2.x
+
+      # Typecheck the tax-sale watchdog's own modules (listed explicitly so the
+      # gate is deterministic and doesn't chase unrelated files).
+      - name: Typecheck
+        run: deno check index.ts sources.ts diff.ts pdf.ts subscribers.ts
+
+      # Runs diff_test.ts + sources_test.ts + subscribers_test.ts. Fetch is
+      # stubbed in-test (no network); --allow-env is needed because
+      # subscribers.ts reads env at module load.
+      - name: Test
+        run: deno test --allow-env
+
+      # revenuecat-webhook lives in its own directory (own entrypoint, own
+      # tests); mapping_test.ts is pure (no env, no network).
+      - name: Typecheck (revenuecat-webhook)
+        working-directory: supabase/functions/revenuecat-webhook
+        run: deno check index.ts mapping.ts
+
+      - name: Test (revenuecat-webhook)
+        working-directory: supabase/functions/revenuecat-webhook
+        run: deno test

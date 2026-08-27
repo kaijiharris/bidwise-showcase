@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>BidWise — App Store screenshot frame</title>
+<style>
+  /* Brand tokens mirror mobile/theme/colors.ts so the caption band reads as the
+     same product as the screenshot inside it. */
+  :root {
+    --midnight: #08111F;
+    --navy: #0E1B2E;
+    --brand: #10A7FF;
+    --text: #F2F6FB;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: var(--midnight); }
+  #stage {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(120% 60% at 50% 0%, rgba(16,167,255,0.18) 0%, rgba(8,17,31,0) 60%),
+      var(--midnight);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  /* Caption band. Sized as a share of frame height so 6.9" and 6.5" match. */
+  #caption {
+    width: 100%;
+    flex: 0 0 15%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 7%;
+  }
+  #caption h1 {
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+    /* Scales with the frame, so long captions never overflow the band. */
+    font-size: clamp(28px, 4.6vw, 92px);
+  }
+  /* Device plate. The capture is contained, never cropped or stretched —
+     distorting a real screenshot would misrepresent the app. */
+  #plate {
+    flex: 1 1 auto;
+    width: 82%;
+    margin-bottom: 6%;
+    border-radius: 6%/2.8%;
+    overflow: hidden;
+    background: var(--navy);
+    box-shadow:
+      0 0 0 2px rgba(255,255,255,0.10),
+      0 40px 90px rgba(0,0,0,0.55);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  #shot { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="caption"><h1 id="captionText"></h1></div>
+  <div id="plate"><img id="shot" alt="" /></div>
+</div>
+<script>
+  const q = new URLSearchParams(location.search);
+  const w = parseInt(q.get('w') || '1320', 10);
+  const h = parseInt(q.get('h') || '2868', 10);
+  const stage = document.getElementById('stage');
+  stage.style.width = w + 'px';
+  stage.style.height = h + 'px';
+  document.getElementById('captionText').textContent = q.get('caption') || '';
+
+  window.__ready = false;
+  // build.mjs injects the capture as a data URI so there are no file:// path
+  // quirks on Windows. __ready flips only after decode, otherwise Playwright
+  // can screenshot an empty plate.
+  window.__setShot = function (uri) {
+    const img = document.getElementById('shot');
+    img.onload = function () {
+      requestAnimationFrame(function () { window.__ready = true; });
+    };
+    img.onerror = function () { window.__ready = true; };
+    img.src = uri;
+  };
+  // No caption and no image still needs to terminate.
+  setTimeout(function () { window.__ready = true; }, 12000);
+</script>
+</body>
+</html>

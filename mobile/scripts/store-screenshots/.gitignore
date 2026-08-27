@@ -1,0 +1,4 @@
+# Screenshots are build artifacts, and device captures may contain a real
+# account's property data. Keep the pipeline in git, never the images.
+input/
+output/

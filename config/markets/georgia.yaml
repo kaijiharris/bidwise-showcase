@@ -1,0 +1,94 @@
+state: GA
+state_name: Georgia
+
+# State-level settings
+property_tax_rate: 0.0087  # Statewide average (0.87%)
+transfer_tax_per_1000: 1.00  # $1 per $1000 (plus county tax)
+redemption_period_months: 12  # Georgia has 12-month redemption for tax liens
+tax_lien_interest_rate: 20  # 20% annual interest on tax liens (very high!)
+
+# State-specific cost adjustments
+costs:
+  insurance_per_sqft_annual: 0.45  # Lower than FL, no hurricanes
+  termite_inspection: 100  # Common in GA
+
+# Counties configuration
+counties:
+  fulton:
+    name: "Fulton County"
+    county_seat: "Atlanta"
+    
+    # Data sources
+    tax_commissioner: "https://www.fultontaxcommissioner.org"
+    assessor_portal: "https://www.qpublic.net/ga/fulton"
+    sheriff_sales: "https://www.fultonsheriff.org"
+    
+    # County-specific rates
+    property_tax_rate: 0.0110  # 1.10% (Atlanta metro area)
+    transfer_tax_per_1000: 1.00  # County tax (on top of state)
+    
+    # Market characteristics
+    median_home_price: 420000
+    avg_days_on_market: 28
+    investor_activity: "very_high"
+    major_metro: true
+    
+    # Rehab cost adjustments (multiplier on default)
+    rehab_cost_multiplier: 1.15  # 15% higher due to Atlanta market labor costs
+    
+    # Tax lien notes
+    tax_lien_market: "active"
+    lien_auction_frequency: "monthly"
+  
+  gwinnett:
+    name: "Gwinnett County"
+    county_seat: "Lawrenceville"
+    
+    # Data sources
+    tax_commissioner: "https://www.gwinnettcounty.com/web/gwinnett/departments/taxcommissioner"
+    assessor_portal: "https://www.gwinnettassessor.com"
+    sheriff_sales: "https://www.gwinnettcountysheriff.com"
+    
+    # County-specific rates
+    property_tax_rate: 0.0105  # 1.05%
+    transfer_tax_per_1000: 1.00
+    
+    # Market characteristics
+    median_home_price: 375000
+    avg_days_on_market: 32
+    investor_activity: "high"
+    major_metro: true
+    
+    # Rehab cost adjustments
+    rehab_cost_multiplier: 1.10  # 10% higher due to metro Atlanta
+    
+    # Tax lien notes
+    tax_lien_market: "active"
+    lien_auction_frequency: "monthly"
+  
+  cobb:
+    name: "Cobb County"
+    county_seat: "Marietta"
+    
+    # Data sources
+    tax_commissioner: "https://www.cobbtax.org"
+    assessor_portal: "https://www.cobbassessor.org"
+    sheriff_sales: "https://www.cobbsheriff.org"
+    
+    # County-specific rates
+    property_tax_rate: 0.0098  # 0.98%
+    transfer_tax_per_1000: 1.00
+    
+    # Market characteristics
+    median_home_price: 410000
+    avg_days_on_market: 30
+    investor_activity: "very_high"
+    major_metro: true
+    desirable_schools: true
+    
+    # Rehab cost adjustments
+    rehab_cost_multiplier: 1.12  # 12% higher - premium market
+    
+    # Tax lien notes
+    tax_lien_market: "active"
+    lien_auction_frequency: "monthly"

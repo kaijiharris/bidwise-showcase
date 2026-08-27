@@ -1,0 +1,309 @@
+{
+  "consoleErrors": [],
+  "pageErrors": [],
+  "viewports": {
+    "320": {
+      "hScroll": false,
+      "scrollWidth": 320,
+      "clientWidth": 320,
+      "h1": "Know your numberbefore you bid.",
+      "ctas": [
+        {
+          "text": "Pricing",
+          "top": 0,
+          "bottom": 0,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        },
+        {
+          "text": "Start Free Trial",
+          "top": 0,
+          "bottom": 0,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        },
+        {
+          "text": "Start Free Trial",
+          "top": 382,
+          "bottom": 434,
+          "visible": true,
+          "inViewport": true,
+          "opacity": "1"
+        },
+        {
+          "text": "Start Free Trial",
+          "top": 3197,
+          "bottom": 3245,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        },
+        {
+          "text": "Start My Free Trial",
+          "top": 8625,
+          "bottom": 8681,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        },
+        {
+          "text": "Pricing",
+          "top": 9263,
+          "bottom": 9280,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        },
+        {
+          "text": "Start Free Trial",
+          "top": 9299,
+          "bottom": 9316,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        }
+      ],
+      "preloader": null,
+      "title": "BidWise — Auction Property Analysis for Real Estate Investors"
+    },
+    "768": {
+      "hScroll": false,
+      "scrollWidth": 768,
+      "clientWidth": 768,
+      "h1": "Know your numberbefore you bid.",
+      "ctas": [
+        {
+          "text": "Pricing",
+          "top": 40,
+          "bottom": 60,
+          "visible": true,
+          "inViewport": true,
+          "opacity": "1"
+        },
+        {
+          "text": "Start Free Trial",
+          "top": 32,
+          "bottom": 68,
+          "visible": true,
+          "inViewport": true,
+          "opacity": "1"
+        },
+        {
+          "text": "Start Free Trial",
+          "top": 390,
+          "bottom": 442,
+          "visible": true,
+          "inViewport": true,
+          "opacity": "1"
+        },
+        {
+          "text": "Start Free Trial",
+          "top": 3283,
+          "bottom": 3331,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        },
+        {
+          "text": "Start My Free Trial",
+          "top": 7233,
+          "bottom": 7289,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        },
+        {
+          "text": "Pricing",
+          "top": 7617,
+          "bottom": 7634,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        },
+        {
+          "text": "Start Free Trial",
+          "top": 7653,
+          "bottom": 7670,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        }
+      ],
+      "preloader": null,
+      "title": "BidWise — Auction Property Analysis for Real Estate Investors"
+    },
+    "1024": {
+      "hScroll": false,
+      "scrollWidth": 1024,
+      "clientWidth": 1024,
+      "h1": "Know your numberbefore you bid.",
+      "ctas": [
+        {
+          "text": "Pricing",
+          "top": 40,
+          "bottom": 60,
+          "visible": true,
+          "inViewport": true,
+          "opacity": "1"
+        },
+        {
+          "text": "Start Free Trial",
+          "top": 32,
+          "bottom": 68,
+          "visible": true,
+          "inViewport": true,
+          "opacity": "1"
+        },
+        {
+          "text": "Start Free Trial",
+          "top": 517,
+          "bottom": 569,
+          "visible": true,
+          "inViewport": true,
+          "opacity": "1"
+        },
+        {
+          "text": "Start Free Trial",
+          "top": 2126,
+          "bottom": 2174,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        },
+        {
+          "text": "Start My Free Trial",
+          "top": 5536,
+          "bottom": 5592,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        },
+        {
+          "text": "Pricing",
+          "top": 5952,
+          "bottom": 5969,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        },
+        {
+          "text": "Start Free Trial",
+          "top": 5988,
+          "bottom": 6005,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        }
+      ],
+      "preloader": null,
+      "title": "BidWise — Auction Property Analysis for Real Estate Investors"
+    },
+    "1440": {
+      "hScroll": false,
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "h1": "Know your numberbefore you bid.",
+      "ctas": [
+        {
+          "text": "Pricing",
+          "top": 40,
+          "bottom": 60,
+          "visible": true,
+          "inViewport": true,
+          "opacity": "1"
+        },
+        {
+          "text": "Start Free Trial",
+          "top": 32,
+          "bottom": 68,
+          "visible": true,
+          "inViewport": true,
+          "opacity": "1"
+        },
+        {
+          "text": "Start Free Trial",
+          "top": 535,
+          "bottom": 587,
+          "visible": true,
+          "inViewport": true,
+          "opacity": "1"
+        },
+        {
+          "text": "Start Free Trial",
+          "top": 2226,
+          "bottom": 2274,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        },
+        {
+          "text": "Start My Free Trial",
+          "top": 5697,
+          "bottom": 5753,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        },
+        {
+          "text": "Pricing",
+          "top": 6113,
+          "bottom": 6130,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        },
+        {
+          "text": "Start Free Trial",
+          "top": 6149,
+          "bottom": 6166,
+          "visible": false,
+          "inViewport": false,
+          "opacity": "1"
+        }
+      ],
+      "preloader": null,
+      "title": "BidWise — Auction Property Analysis for Real Estate Investors"
+    }
+  },
+  "timing": {
+    "320": {
+      "domMs": 262,
+      "loadMs": 944
+    },
+    "768": {
+      "domMs": 42,
+      "loadMs": 1047
+    },
+    "1024": {
+      "domMs": 30,
+      "loadMs": 966
+    },
+    "1440": {
+      "domMs": 202,
+      "loadMs": 975
+    }
+  },
+  "reducedMotion": {
+    "runningCount": 3,
+    "running": [
+      {
+        "type": "CSSTransition",
+        "name": "transition",
+        "target": "DIV.transition-opacity "
+      },
+      {
+        "type": "CSSTransition",
+        "name": "transition",
+        "target": "DIV.transition-opacity flex items-end justif"
+      },
+      {
+        "type": "CSSAnimation",
+        "name": "pulse",
+        "target": "DIV.w-1.5 h-1.5 rounded-full animate-pulse"
+      }
+    ],
+    "hiddenSections": []
+  }
+}
