@@ -30,7 +30,7 @@ https://console.cloud.google.com/
 - Left menu → **"APIs & Services"** → **"Credentials"**
 - Click **"+ CREATE CREDENTIALS"**
 - Select **"API Key"**
-- **COPY THE KEY!** (looks like: `AIzaSyXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxX`)
+- **COPY THE KEY!** (looks like: `YOUR_GOOGLE_MAPS_API_KEY`)
 
 ### 5. Restrict Key (Recommended)
 After creating:
@@ -59,7 +59,7 @@ GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
 With your actual key:
 
 ```bash
-GOOGLE_MAPS_API_KEY=AIzaSyXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxX
+GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY
 ```
 
 **Save the file!**
